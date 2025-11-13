@@ -6,7 +6,7 @@ meta:
     name: docker
     version: latest
 build:
-  dockerfile: DockerFile
+  dockerfile: ""
 run:
   command:
   - python

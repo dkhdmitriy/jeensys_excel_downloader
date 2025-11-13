@@ -1,51 +1,93 @@
 # jeensys_parser
 
-Small helper script that uses Selenium to log into https://mon.jeensys.com and export devices to Excel.
+Набор инструментов для анализа устройств майнинга из https://mon.jeensys.com с возможностью отправки отчётов в Telegram.
 
+## Компоненты:
 
-Quick start (Windows PowerShell):
+- **main.py** - Скрипт для скачивания Excel файла с устройствами и их анализа
+- **bot.py** - Telegram-бот для получения отчётов по требованию
 
-1. Create and activate a virtual environment (recommended):
+## Быстрый старт (Windows PowerShell):
+
+### 1. Создание и активация виртуального окружения:
 
 ```powershell
-# create a venv in the project folder
+# Создание виртуального окружения
 python -m venv .venv
 
-# activate the venv in PowerShell
+# Активация виртуального окружения в PowerShell
 .\.venv\Scripts\Activate.ps1
 
-# (You should now see '(.venv)' in your prompt)
+# (Теперь в приглашении должно появиться '(.venv)')
 ```
 
-2. Install Python dependencies into the active venv:
+### 2. Установка зависимостей:
 
 ```powershell
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-3. Provide credentials via environment variables or a local `.env` file.
+### 3. Установка переменных окружения:
 
-Create a `.env` (copy from `.env.example`) or set in PowerShell and run:
+Создайте файл `.env` в корне проекта (скопируйте из `.env.example`) или установите переменные:
 
 ```powershell
 $env:JEENSYS_LOGIN = 'your_login'
 $env:JEENSYS_PASSWORD = 'your_password'
+$env:TELEGRAM_BOT_TOKEN = 'your_telegram_bot_token'
+```
+
+## Использование
+
+### Скачивание и анализ Excel файла (main.py):
+
+```powershell
+# Обычный режим (видно браузер)
 python .\main.py
-```
 
-Run headless:
-
-```powershell
+# Headless режим (без окна браузера)
 python .\main.py --headless
-```
 
-Keep the browser open for inspection (adds 15s pause):
-
-```powershell
+# Оставить браузер открытым на 15 секунд для инспекции
 python .\main.py --keep-open
 ```
 
-Notes:
-- Do NOT commit real credentials. Use `.env.example` as a template.
-- Downloads are written to the repository root; change `prefs['download.default_directory']` in `build_driver()` to change this location.
+После успешного запуска скрипт:
+1. Авторизуется на mon.jeensys.com
+2. Экспортирует все устройства в Excel
+3. Анализирует файл и выводит отчёт в консоль
+
+### Telegram-бот (bot.py):
+
+```powershell
+python .\bot.py
+```
+
+Бот поддерживает следующие команды:
+- `/start` - Приветствие и справка
+- `/report` - **Скачать новый Excel файл и получить анализ устройств**
+- `/help` - Справка по командам
+
+**Важно:** Для работы бота необходимо установить переменные окружения:
+- `JEENSYS_LOGIN` и `JEENSYS_PASSWORD` - для авторизации на mon.jeensys.com
+- `TELEGRAM_BOT_TOKEN` - токен вашего Telegram бота
+
+## Отчёт
+
+Отчёт содержит следующую информацию:
+
+**LTC СЕГМЕНТ:**
+- L7 и L9 с средним хэшрейтом, количеством устройств и общим хэшрейтом
+- ИТОГ по LTC
+
+**BTC СЕГМЕНТ:**
+- WM, T21, S19, S19 доп, S19 emcd с аналогичной статистикой
+- Среднее значение по всем вариантам S19
+- ИТОГ по BTC
+
+## Примечания:
+
+- **Безопасность**: Не коммитьте реальные учётные данные. Используйте `.env.example` как шаблон.
+- **Загрузки**: Excel файлы скачиваются в корень репозитория. Для изменения пути отредактируйте `prefs['download.default_directory']` в функции `build_driver()`.
+- **Точное совпадение**: При фильтрации клиентов используется точное совпадение названия, чтобы избежать пересечений (например, S19 не захватывает S19 XP или S21).

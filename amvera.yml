@@ -13,4 +13,4 @@ run:
   - bot.py
   persistenceMount: /data
   containerPort: 80
-  image: "containerImage: jeensys-bot:latest"
+  image: ""

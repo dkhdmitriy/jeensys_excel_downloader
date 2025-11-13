@@ -1,13 +1,41 @@
----
 version: null
 meta:
   environment: python
   toolchain:
     name: pip
-    version: 3.11
+    version: "3.11"
 build:
   requirementsPath: requirements.txt
   useCache: true
+  # Команды, запускаемые в окружении сборки перед установкой зависимостей.
+  # Добавляем установку Chromium / Google Chrome чтобы Selenium мог запускаться в CI.
+  commands:
+    - |
+      set -e
+      export DEBIAN_FRONTEND=noninteractive || true
+      if command -v apt-get >/dev/null 2>&1; then
+        apt-get update -y || true
+        apt-get install -y --no-install-recommends ca-certificates wget gnupg2 lsb-release || true
+        # Попытка установить Chromium из стандартных репозиториев
+        apt-get install -y --no-install-recommends chromium chromium-browser chromium-driver || true
+        # Фоллбек: установить Google Chrome (если доступен репозиторий)
+        if ! command -v chromium >/dev/null 2>&1 && ! command -v google-chrome >/dev/null 2>&1; then
+          wget -q -O /tmp/google-linux-signing-key.pub https://dl.google.com/linux/linux_signing_key.pub || true
+          apt-key add /tmp/google-linux-signing-key.pub || true
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list || true
+          apt-get update -y || true
+          apt-get install -y --no-install-recommends google-chrome-stable || true
+        fi
+      elif command -v yum >/dev/null 2>&1; then
+        # For RPM-based systems
+        yum install -y epel-release || true
+        yum install -y chromium chromium-headless || true
+      elif command -v apk >/dev/null 2>&1; then
+        # Alpine
+        apk add --no-cache chromium chromium-chromedriver || true
+      else
+        echo "Неизвестный пакетный менеджер — убедитесь, что в CI доступен Chrome/Chromium" || true
+      fi
 run:
   scriptName: bot.py
   persistenceMount: /data

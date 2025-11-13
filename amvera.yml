@@ -1,14 +1,23 @@
----
 version: null
 meta:
   environment: python
   toolchain:
     name: pip
-    version: 3.11
+    version: "3.11"
 build:
   requirementsPath: requirements.txt
   useCache: true
+  # Сборка Docker-образа на основе корневого Dockerfile проекта.
+  # CI должен иметь установленный Docker; если runner не поддерживает Docker,
+  # используйте опцию сборки образа вне CI и укажите публичный/приватный образ.
+  commands:
+    - |
+      set -e
+      echo "Building Docker image jeensys-bot:latest"
+      docker build -t jeensys-bot:latest .
 run:
+  # Указать использовать собранный Docker-образ (если платформа поддерживает)
+  containerImage: jeensys-bot:latest
   scriptName: bot.py
   persistenceMount: /data
   containerPort: 80

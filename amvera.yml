@@ -1,35 +1,14 @@
-version: 1
+---
+version: null
 meta:
-  # Для сборки и запуска используем Docker-окружение
   environment: docker
   toolchain:
     name: docker
-    version: "20.10"
-build:
-  # Сборка Docker-образа на базе корневого Dockerfile проекта
-  useCache: true
-  docker:
-    dockerfile: Dockerfile
-    imageName: jeensys-bot:latest
-    context: .
-    # Если нужно, можно задать дополнительные buildArgs:
-    # buildArgs:
-    #   - KEY=VALUE
+    version: latest
+build: {}
 run:
-  # Указать использовать собранный Docker-образ (если платформа поддерживает)
-  # Образ, который будет запускаться после сборки
-  containerImage: jeensys-bot:latest
-  # Команда запуска внутри контейнера (можно переопределить в CI)
   command:
-    - python
-    - bot.py
+  - python
+  - bot.py
   persistenceMount: /data
   containerPort: 80
-  # Перечислим ожидаемые переменные окружения (CI может подсказать значения)
-  env:
-    - name: JEENSYS_LOGIN
-      required: false
-    - name: JEENSYS_PASSWORD
-      required: false
-    - name: TELEGRAM_TOKEN
-      required: true

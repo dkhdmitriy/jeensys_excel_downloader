@@ -1,0 +1,16 @@
+version: null
+meta:
+  environment: python
+  toolchain:
+    name: pip
+    version: latest
+build:
+  dockerfile: ""
+  requirementsPath: requirements.txt
+run:
+  command:
+    - python
+    - bot.py
+  persistenceMount: /data
+  containerPort: 80
+  image: "Dockerfile"

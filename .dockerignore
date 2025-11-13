@@ -1,0 +1,14 @@
+__pycache__/
+.venv/
+venv/
+.env
+.env.local
+.env.*
+*.pyc
+.git
+dist/
+build/
+*.egg-info
+downloads/
+*.xlsx
+~$*

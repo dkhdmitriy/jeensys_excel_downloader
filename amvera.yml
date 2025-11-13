@@ -5,10 +5,12 @@ meta:
   toolchain:
     name: docker
     version: latest
-build: {}
+build:
+  dockerfile: DockerFile
 run:
   command:
   - python
   - bot.py
   persistenceMount: /data
   containerPort: 80
+  image: jeensys-bot:latest
